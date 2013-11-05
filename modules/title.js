@@ -15,8 +15,11 @@ module.exports = function(client, config) {
                 }
                 titleRegex.lastIndex = 0;
                 var titleMatch = titleRegex.exec(body);
+		if (response.statusCode != 201){
+		    client.say(to,"Error: " + response.statusCode);
+		}
                 if (titleMatch) {
-                    client.say(to, "[ " + titleMatch[2] + " ]")
+                    client.say(to, "[ " + titleMatch[2] + " ]");
                 }
             });
         }

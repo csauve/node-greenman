@@ -6,11 +6,12 @@ module.exports = {
     nick: "greenman",
     options: {
         userName: "greenman",
-        channels: ["#modacitytest"]
+        channels: ["#modacity"]
     },
 
     cmdPrefix: ".",
-
+    //message colors
+    colors: true;
     //modules config
     modulesDir: path.join(__dirname, "modules")
 };
