@@ -12,9 +12,5 @@ module.exports = {
     cmdPrefix: ".",
 
     //modules config
-    modulesPath: path.join(__dirname, "modules"),
-    enabledModules: [
-        "greetings",
-        "rcon"
-    ]
+    modulesDir: path.join(__dirname, "modules")
 };
