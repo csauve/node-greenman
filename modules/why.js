@@ -3,10 +3,8 @@ var url = "http://www.leonatkinson.com/random/index.php/rest.html?method=advice"
 var quoteRegex = /<quote>(.*)<\/quote>/;
 
 module.exports = function(client, config) {
-    var commandRegex = new RegExp(config.cmdPrefix + "why", "i");
-
     client.addListener("message", function(from, to, message) {
-        if (!message.match(commandRegex)) {
+        if (!message.match(RegExp(config.cmdPrefix + "why", "i"))) {
             return;
         }
 

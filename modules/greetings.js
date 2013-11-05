@@ -1,12 +1,10 @@
 module.exports = function(client, config) {
-    var regex = new RegExp("(greetings|hello|hi|sup|yo|hey) " + config.nick, "i");
-    
-    client.addListener("message", function(from, to, message) {
-        if (message.match(regex)) {
-            client.say(to, "Hi " + from + "!");
+    client.addListener("message#", function(nick, to, text) {
+        if (message.match(RegExp("(greetings|hello|hi|sup|yo|hey)\s"+config.nick,"i")) {
+            client.say(to, "Hi " + nick + "!");
         }
-	if (message.match(RegExp(config.nick + "!"))) {
-	    client.say(to, from + "!");
+	if (message.match(RegExp(config.nick + "!",i))) {
+	    client.say(nick, from + "!");
 	}
     });
 };

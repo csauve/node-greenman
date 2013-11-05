@@ -3,8 +3,8 @@ var urlRegex = /(?:.*\s+|^)((http:\/\/|https:\/\/|www\.)(\S)+)(?:\s+.*|$)/i;
 var titleRegex = /(<\s*title[^>]*>(.+?)<\s*\/\s*title)>/g;
 
 module.exports = function(client, config) {
-    client.addListener("message", function(from, to, message) {
-        var urlMatch = message.match(urlRegex);
+    client.addListener("message#", function(nick, to, text) {
+        var urlMatch = text.match(urlRegex);
         if (urlMatch) {
             var url = urlMatch[1];
             
