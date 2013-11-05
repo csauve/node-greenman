@@ -5,15 +5,6 @@ var config = require("./config");
 
 var client = new irc.Client(config.server, config.nick, config.options);
 
-//handle process errors
-process.on('uncaughtException', function(err) {
-    console.log(err.stack);
-});
-//handle irc errors
-client.addListener("error", function(message) {
-    console.log(message);
-});
-
 //load modules
 var modulesToLoad = config.enabledModules || fs.readdirSync(config.modulesDir);
 modulesToLoad.forEach(function(moduleName) {
@@ -25,3 +16,12 @@ modulesToLoad.forEach(function(moduleName) {
     console.log("Loaded module: " + moduleName);
 });
 console.log("Running");
+
+//handle process errors. we set this up *after* modules have loaded
+process.on('uncaughtException', function(err) {
+    console.log(err.stack);
+});
+//handle irc errors
+client.addListener("error", function(message) {
+    console.log(message);
+});
