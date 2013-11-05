@@ -7,7 +7,7 @@ var client = new irc.Client(config.server, config.nick, config.options);
 
 //handle process errors
 process.on('uncaughtException', function(err) {
-    console.log(err);
+    console.log(err.stack);
 });
 //handle irc errors
 client.addListener("error", function(message) {
@@ -24,3 +24,4 @@ modulesToLoad.forEach(function(moduleName) {
     require(path.join(config.modulesDir, moduleName))(client, config);
     console.log("Loaded module: " + moduleName);
 });
+console.log("Running");
