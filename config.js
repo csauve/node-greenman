@@ -16,8 +16,6 @@ module.exports = {
     },
 
     cmdPrefix: ".",
-    //message colors
-    colors: true;
     //modules config
     modulesDir: path.join(__dirname, "modules")
 };
