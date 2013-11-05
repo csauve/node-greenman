@@ -1,3 +1,4 @@
+_ = require("underscore");
 var irc = require("irc");
 var path = require("path");
 var fs = require("fs");
@@ -9,7 +10,7 @@ var client = new irc.Client(config.server, config.nick, config.options);
 var modulesToLoad = config.enabledModules || fs.readdirSync(config.modulesDir);
 modulesToLoad.forEach(function(moduleName) {
     //ignore modules in the disabled list
-    if (config.disabledModules && config.disabledModules.indexOf(moduleName.split(".")[0]) != -1) {
+    if (_.contains(config.disabledModules, moduleName.split(".")[0])) {
         return;
     }
     require(path.join(config.modulesDir, moduleName))(client, config);
