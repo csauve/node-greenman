@@ -6,6 +6,12 @@ module.exports = {
     nick: "greenman",
     options: {
         userName: "greenman",
+	realName: "Greenman",
+	autoRejoin: true,
+	floodProtection: true,
+	floodProtectionDelay: 1000,
+	stripColors: false,
+	messageSplit: 256,
         channels: ["#modacity"]
     },
 
