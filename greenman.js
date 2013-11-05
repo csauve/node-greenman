@@ -5,14 +5,19 @@ var config = require("./config");
 
 var client = new irc.Client(config.server, config.nick, config.options);
 
+//handle process errors
+process.on('uncaughtException', function(err) {
+    console.log(err);
+});
+//handle irc errors
 client.addListener("error", function(message) {
     console.log(message);
 });
 
 //load modules
 var modulesToLoad = config.enabledModules || fs.readdirSync(config.modulesDir);
-
 modulesToLoad.forEach(function(moduleName) {
+    //ignore modules in the disabled list
     if (config.disabledModules && config.disabledModules.indexOf(moduleName.split(".")[0]) != -1) {
         return;
     }
