@@ -19,7 +19,7 @@
     "irc": "~0.3.6",
     "optimist": "~0.6.0",
     "request": "~2.27.0",
-    "underscore": "~1.5.2"
+    "underscore": "~1.5.2",
     "nstore": "~0.5.2"
   }
 }
