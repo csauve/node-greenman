@@ -1,6 +1,6 @@
 var irc = require("irc");
-var config = require("./config");
 var path = require("path");
+var config = require("./config");
 
 var client = new irc.Client(config.server, config.nick, config.options);
 
