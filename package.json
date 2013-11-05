@@ -1,0 +1,21 @@
+{
+  "name": "greenman",
+  "version": "0.0.0",
+  "description": "IRC bot based on node-irc",
+  "main": "greenman.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/csauve/greenman.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/csauve/greenman/issues"
+  },
+  "dependencies": {
+    "irc": "~0.3.6"
+  }
+}
