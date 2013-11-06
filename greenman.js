@@ -25,5 +25,4 @@ process.on('uncaughtException', function(err) {
 //handle irc errors
 client.addListener("error", function(message) {
     console.log(message);
-    client.say("Error: " + message);
 });
