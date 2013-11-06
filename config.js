@@ -15,7 +15,7 @@ module.exports = {
         channels: ["#modacity"]
     },
 
-    cmdPrefix: "^\.",
+    cmdPrefix: "^\\.",
     //modules config
     modulesDir: path.join(__dirname, "modules")
 };
