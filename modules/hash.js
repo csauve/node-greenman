@@ -6,7 +6,7 @@ module.exports = function(client, config) {
 		if (cmd) {
 			if (cmd[1] && cmd[2]) {
 				try {
-					var hash = crypto.createHash(cmd[1]).update(cmd[1]).digest("hex");
+					var hash = crypto.createHash(cmd[1]).update(cmd[2]).digest("hex");
 					client.say(to, cmd[1] + " hash of \"" + cmd[2] +"\": " + hash);
 				} catch (err) {
 					client.say(to, nick + ": Error: " + err);
