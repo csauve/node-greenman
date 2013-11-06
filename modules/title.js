@@ -9,15 +9,13 @@ module.exports = function(client, config) {
             var url = urlMatch[1];
             
             request.get(url, function(error, response, body) {
-                if (error) {
-                    console.log(error);
+                if (response.statusCode != 200 || error){
+                    client.say(to, "[ Error: " + response.statusCode + " ]");
                     return;
                 }
+
                 titleRegex.lastIndex = 0;
                 var titleMatch = titleRegex.exec(body);
-		if (response.statusCode != 201){
-		    client.say(to,"Error: " + response.statusCode);
-		}
                 if (titleMatch) {
                     client.say(to, "[ " + titleMatch[2] + " ]");
                 }
