@@ -17,4 +17,4 @@ module.exports = {
     shutdown: function() {
         ircClient.removeListener("message#", handleMessage);
     }
-}
+};
