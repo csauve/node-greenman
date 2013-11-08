@@ -12,7 +12,7 @@ function unloadModule(moduleName) {
     }
     modules[moduleName].shutdown();
     delete modules[moduleName];
-    delete require.cache[path.join(config.modulesDir, moduleName)];
+    delete require.cache[require.resolve(path.join(config.modulesDir, moduleName))];
     console.log("Unloaded module: " + moduleName);
 }
 
