@@ -1,28 +1,14 @@
 _ = require("underscore");
-var irc = require("irc");
-var path = require("path");
-var fs = require("fs");
-var config = require("./config");
+var moduleLoader = require("./moduleLoader");
 
-var client = new irc.Client(config.server, config.nick, config.options);
+//load the modules
+if (moduleLoader.init() == 0) {
+	console.warn("No modules loaded.");
+	process.exit(1);
+}
 
-//load modules
-var modulesToLoad = config.enabledModules || fs.readdirSync(config.modulesDir);
-modulesToLoad.forEach(function(moduleName) {
-    //ignore modules in the disabled list
-    if (_.contains(config.disabledModules, moduleName.split(".")[0])) {
-        return;
-    }
-    require(path.join(config.modulesDir, moduleName))(client, config);
-    console.log("Loaded module: " + moduleName);
-});
-console.log("Running");
-
-//handle process errors. we set this up *after* modules have loaded
+//handle process errors during normal operation. we set this up *after*
+//modules have loaded so a malfunctioning module doesn't crash greenman
 process.on('uncaughtException', function(err) {
     console.log(err.stack);
-});
-//handle irc errors
-client.addListener("error", function(message) {
-    console.log(message);
 });

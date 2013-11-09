@@ -1,23 +1,34 @@
+var ircClient = require("../ircClient");
 var request = require("request");
+var config = require("../config");
+
 var url = "http://www.leonatkinson.com/random/index.php/rest.html?method=advice";
 var quoteRegex = /<quote>(.*)<\/quote>/;
 
-module.exports = function(client, config) {
-    client.addListener("message", function(from, to, message) {
-        if (!message.match(RegExp(config.cmdPrefix + "why", "i"))) {
+function handleMessage(from, to, message) {
+    if (!message.match(RegExp(config.cmdPrefix + "why", "i"))) {
+        return;
+    }
+
+    request.get(url, function(error, response, body) {
+        if (error) {
+            console.log(error);
             return;
         }
-
-        request.get(url, function(error, response, body) {
-            if (error) {
-                console.log(error);
-                return;
-            }
-            quoteRegex.lastIndex = 0;
-            var quoteMatch = quoteRegex.exec(body);
-            if (quoteMatch) {
-                client.say(to, from + ": " + quoteMatch[1])
-            }
-        });
+        quoteRegex.lastIndex = 0;
+        var quoteMatch = quoteRegex.exec(body);
+        if (quoteMatch) {
+            ircClient.say(to, from + ": " + quoteMatch[1])
+        }
     });
+}
+
+module.exports = {
+    setup: function() {
+        ircClient.addListener("message#", handleMessage);
+    },
+
+    shutdown: function() {
+        ircClient.removeListener("message#", handleMessage);
+    }
 };
