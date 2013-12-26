@@ -2,7 +2,8 @@ var ircClient = require("../ircClient");
 var config = require("../config");
 var nStore = require("nstore");
 var moment = require("moment");
-var seen = nStore.new("seen.db", function() {});
+
+var seen = null;
 
 function saveSeen(nick, channel) {
     seen.save(nick,
@@ -36,20 +37,22 @@ function handleMessage(nick, to, text) {
                 ircClient.say(to, nick + ": I haven't seen " + name);
                 return;
             }
-            ircClient.say(to, nick + ": I last saw " + name + " in " + doc["channel"] +
-                " " + moment(doc["date"]).fromNow());
+            ircClient.say(to, nick + ": I last saw " + name + " in " + doc["channel"] + " " + moment(doc["date"]).fromNow());
         });
     }
 }
 
 module.exports = {
     setup: function() {
-        ircClient.addListener("join", handleJoin);
-        ircClient.addListener("message#", handleMessage);
+        nStore.new("seen.db", function() {
+            ircClient.addListener("join", handleJoin);
+            ircClient.addListener("message#", handleMessage);
+        });
     },
 
     shutdown: function() {
         ircClient.removeListener("join", handleJoin);
         ircClient.removeListener("message#", handleMessage);
+        nstore = null;
     }
 };
