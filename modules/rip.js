@@ -1,6 +1,6 @@
 var ircClient = require("../ircClient");
 
-var regex = /.*(kanye|rec0|neuro|obama|(?:halo 5)).*/i;//hueheue
+var regex = /.*(kanye|rec0|neuro|obama|rentabot|(?:halo 5)).*/i;//hueheue
 
 function handleMessage(from, to, message) {
     var match = message.match(regex);

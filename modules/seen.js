@@ -6,7 +6,7 @@ var moment = require("moment");
 var seen = null;
 
 function saveSeen(nick, channel) {
-    seen.save(nick,
+    seen.save(nick.toLowerCase(),
         {
             date: new Date(),
             channel: channel
@@ -32,7 +32,7 @@ function handleMessage(nick, to, text) {
     var cmd = text.match(RegExp(config.cmdPrefix + "seen\\s+(.+)", "i"));
     if (cmd) {
         var name = cmd[1];
-        seen.get(name, function(err, doc, key) {
+        seen.get(name.toLowerCase(), function(err, doc, key) {
             if (err) {
                 ircClient.say(to, nick + ": I haven't seen " + name);
                 return;
@@ -44,7 +44,7 @@ function handleMessage(nick, to, text) {
 
 module.exports = {
     setup: function() {
-        nStore.new("seen.db", function() {
+        seen = nStore.new("seen.db", function() {
             ircClient.addListener("join", handleJoin);
             ircClient.addListener("message#", handleMessage);
         });
