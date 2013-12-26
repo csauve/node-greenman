@@ -3,7 +3,6 @@ var config = require("../config");
 var request = require("request");
 
 //using public API documented at: http://www.cryptocoincharts.info/v2/tools/api
-
 function handleMessage(from, to, message) {
     var match = message.match(RegExp(config.cmdPrefix + "coin (?:(?:(\\d+) (\\w+) to (\\w+)$)|(\\w+)$)", "i"));
     if (match) {
@@ -30,9 +29,9 @@ function handleMessage(from, to, message) {
             //if we requested a valid trading pair
             var pair = JSON.parse(body);
             if (pair.id) {
-                ircClient.say(to, from + ": " + pair.id + " price: " + pair.price +
-                    (value > 1 ? (", " + value + " " + source + " = " + (value * pair.price) + " " + dest) : "") +
-                    ", best market: " + pair.best_market);
+                ircClient.say(to, from + ": 1 " + source + " = " + pair.price + " " + dest + ", " +
+                    (value > 1 ? (value + " " + source + " = " + (value * pair.price) + " " + dest + ", ") : "") +
+                    "best market: " + pair.best_market);
             } else {
                 ircClient.say(to, from + ": No exchange information available for " + source + "/" + dest);
             }
