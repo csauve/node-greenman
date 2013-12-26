@@ -5,22 +5,28 @@ var fs = require("fs");
 var modules = {};
 
 //shuts down a module and invalidates its associated require cache
-function unloadModule(moduleName) {
+function unloadModule(moduleName, callback) {
     if (!modules[moduleName]) {
         console.warn("Module " + moduleName + " is not loaded");
+        callback("Module " + moduleName + " is not loaded");
         return;
     }
     modules[moduleName].shutdown();
     delete modules[moduleName];
     delete require.cache[require.resolve(path.join(config.modulesDir, moduleName))];
     console.log("Unloaded module: " + moduleName);
+    callback();
 }
 
 //loads a module, or reloads it if the module has already been loaded
-function loadModule(moduleName) {
+function loadModule(moduleName, callback) {
     if (modules[moduleName]) {
         console.log("Module " + moduleName + " is already loaded. Unloading");
-        unloadModule(moduleName);
+        unloadModule(moduleName, function(error) {
+            if (error) {
+                console.warn(error);
+            }
+        });
     }
 
     try {
@@ -28,11 +34,11 @@ function loadModule(moduleName) {
         mod.setup();
         modules[moduleName] = mod;
         console.log("Loaded module: " + moduleName);
-        return true;
+        callback();
     } catch (err) {
         console.error("Failed to load module: " + moduleName);
         console.error(err.stack);
-        return false;
+        callback(err);
     }
 }
 
@@ -48,15 +54,16 @@ function init() {
             return;
         }
 
-        if (loadModule(moduleName)) {
-            count++;
-        }
+        loadModule(moduleName, function(error) {
+            if (!error) {
+                count++;
+            }
+        });
     });
 
     console.log("Loaded " + count + " modules");
     return count;
 }
-
 
 function getLoadedModules() {
     var moduleNames = [];

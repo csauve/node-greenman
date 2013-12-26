@@ -5,7 +5,7 @@ var regex = /.*(kanye|rec0|neuro|obama|(?:halo 5)).*/i;//hueheue
 function handleMessage(from, to, message) {
     var match = message.match(regex);
     if (match) {
-        ircClient.say(to, "Rip " + match[1]);
+        ircClient.say(to, "rip " + match[1]);
     }
 }
 
