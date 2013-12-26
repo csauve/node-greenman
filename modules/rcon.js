@@ -12,6 +12,7 @@ function handlePm(from, message) {
         return;
     }
 
+    //todo: redo command logic (use some sort of command line arguments parsing lib?)
     var args = match[1].split(" ");
     switch (true) {
         case /^(?:j|join)/.test(args[0]):
@@ -36,6 +37,32 @@ function handlePm(from, message) {
                     ircClient.say(from, "Unloaded module " + args[1]);
                 }
             });
+            break;
+        case /^(?:getconfig|getc)/.test(args[0]):
+            var pathElements = args[1].split(".");
+            var node = config;
+            for (var i = 0; i < pathElements.length && node != undefined; i++) {
+                node = node[pathElements[i]];
+            }
+            ircClient.say(from, "Value: " + node);
+            break;
+        case /^(?:setconfig|setc)/.test(args[0]):
+            var pathElements = args[1].split(".");
+            var value = args[2];
+
+            var node = config;
+            //all but the final node need to be objects set by reference
+            for (var i = 0; i < pathElements.length - 1; i++) {
+                //create objects as we go if needed
+                if (node[pathElements[i]] == undefined) {
+                    node[pathElements[i]] = {};
+                }
+                node = node[pathElements[i]];
+            }
+
+            //set the final value by reference
+            node[pathElements[pathElements.length - 1]] = value;
+            ircClient.say(from, "Value set");
             break;
         default:
             ircClient.say(from, "Unsupported command: " + args[0]);
