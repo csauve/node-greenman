@@ -1,58 +1,48 @@
 var ircClient = require("../ircClient");
 var config = require("../config");
-var nStore = require("nstore");
+var Datastore = require("nedb");
 var moment = require("moment");
 
-var seen = null;
+var seenDb = new Datastore({ filename: "seen.db", autoload: true });
+seenDb.persistence.setAutocompactionInterval(48 * 60 * 60 * 1000);
 
-function saveSeen(nick, channel) {
-    seen.save(nick.toLowerCase(),
+function handleMessage(nick, to, text) {
+    //we've seen 'nick' post, so save this fact to the db
+    seenDb.update({name: nick.toLowerCase()},
         {
+            name: nick.toLowerCase(),
             date: new Date(),
-            channel: channel
+            channel: to
         },
-        function(error) {
+        { multi: true, upsert: true }, function(error, numReplaced, upsert) {
             if (error) {
-                console.log(error);
+                throw error;
             }
         }
     );
-}
 
-function handleJoin(channel, nick, message) {
-    //save the timestamp upon joining
-    saveSeen(nick, channel);
-}
-
-function handleMessage(nick, to, text) {
-    //save the timestamp upon message from nick
-    saveSeen(nick, to);
-
-    //check if theyre issuing the seen command
+    //check if they're issuing the seen command
     var cmd = text.match(RegExp(config.cmdPrefix + "seen\\s+(.+)", "i"));
     if (cmd) {
-        var name = cmd[1];
-        seen.get(name.toLowerCase(), function(err, doc, key) {
+        var name = cmd[1].toLowerCase();
+        seenDb.findOne({name: name}, function(err, doc) {
             if (err) {
-                ircClient.say(to, nick + ": I haven't seen " + name);
-                return;
+                throw err;
             }
-            ircClient.say(to, nick + ": I last saw " + name + " in " + doc["channel"] + " " + moment(doc["date"]).fromNow());
+            ircClient.say(to, nick + ": " + (doc ?
+                "I last saw " + name + " in " + doc.channel + " " + moment(doc.date).fromNow() :
+                "I haven't seen " + name
+            ));
         });
     }
 }
 
 module.exports = {
     setup: function() {
-        seen = nStore.new("seen.db", function() {
-            ircClient.addListener("join", handleJoin);
-            ircClient.addListener("message#", handleMessage);
-        });
+        ircClient.addListener("message#", handleMessage);
     },
 
     shutdown: function() {
-        ircClient.removeListener("join", handleJoin);
         ircClient.removeListener("message#", handleMessage);
-        nstore = null;
     }
 };
