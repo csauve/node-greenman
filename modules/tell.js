@@ -46,7 +46,7 @@ function handleMessage(nick, to, text) {
 
                 if (recipient == nick.toLowerCase()) {
                     ircClient.say(to, nick + ": Tell yourself that!");
-                    return;
+                    continue;
                 }
 
                 var mailItem = {

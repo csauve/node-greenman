@@ -20,7 +20,6 @@
     "optimist": "~0.6.0",
     "request": "~2.27.0",
     "underscore": "~1.5.2",
-    "nstore": "~0.5.2",
     "moment": "~2.4.0",
     "crypto": "0.0.3",
     "xml2js": "~0.4.0",
