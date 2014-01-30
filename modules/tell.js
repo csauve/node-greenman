@@ -6,6 +6,15 @@ var Datastore = require("nedb");
 var tellDb = new Datastore({ filename: "tell.db", autoload: true });
 tellDb.persistence.setAutocompactionInterval(48 * 60 * 60 * 1000);
 
+//lets other modules send mail too
+function sendMail(outbox, callback) {
+    if (outbox.length > 0) {
+        tellDb.insert(outbox, function(err, newDocs) {
+            callback(err);
+        });
+    }
+}
+
 function handleMessage(nick, to, text) {
     //check if the user has any mail
     tellDb.find({recipient: nick.toLowerCase()}).sort({date: 1}).exec(function(err, docs) {
@@ -60,15 +69,13 @@ function handleMessage(nick, to, text) {
             }
         }
 
-        if (outbox.length > 0) {
-            tellDb.insert(outbox, function(err, newDocs) {
-                if (err) {
-                    throw err;
-                }
-                ircClient.say(to, nick + ": I'll pass that on when " +
-                    (outbox.length == 1 ? recipient + " next posts." : "they each post."));
-            });
-        }
+        sendMail(outbox, function(err) {
+            if (err) {
+                throw err;
+            }
+            ircClient.say(to, nick + ": I'll pass that on when " +
+                (outbox.length == 1 ? recipient + " next posts." : "they each post."));
+        });
     }
 }
 
@@ -90,5 +97,7 @@ module.exports = {
     shutdown: function() {
         ircClient.removeListener("join", handleJoin);
         ircClient.removeListener("message#", handleMessage);
-    }
+    },
+
+    sendMail: sendMail
 };

@@ -4,6 +4,8 @@ var Datastore = require("nedb");
 var sugar = require("sugar");
 var moment = require("moment");
 
+//services
+var tell = require("./tell"); //todo: what happens if tell reloads? clear and reload this reference somehow
 var remindersDb = new Datastore({ filename: "reminders.db", autoload: true });
 remindersDb.persistence.setAutocompactionInterval(48 * 60 * 60 * 1000);
 
@@ -17,8 +19,33 @@ function handleTimeout(reminder) {
     //timeout has already been cleared, just need to remove key from timeouts list
     delete timeouts[reminder._id];
     var fromNow = moment(reminder.dateCreated).fromNow();
-    //todo: check if user is in channel, and if not send them mail using tell module instead
-    ircClient.say(reminder.channel, reminder.name + ": [" + fromNow + "] " + reminder.message);
+
+    //check if user is in channel, and if not send them mail using tell module instead
+    ircClient.whois(reminder.name, function(info) {
+        if (info.channels) {
+            for (var i = 0; i < info.channels.length; i++) {
+                var channel = info.channels[i].toLowerCase();
+                if (channel.endsWith(reminder.channel)) {
+                    ircClient.say(reminder.channel, reminder.name + ": [" + fromNow + "] " + reminder.message);
+                    return;
+                }
+            }
+        }
+
+        //user isn't available, so send them mail instead
+        mail = {
+            recipient: reminder.name,
+            message: "[Forwarded by reminders] " + reminder.message,
+            date: reminder.dateCreated,
+            sender: reminder.name
+        }
+        tell.sendMail([mail], function(err) {
+            if (err) {
+                throw err;
+            }
+        });
+    });
+
 }
 
 //clear timeouts so module can reload without creating multiple timeouts for the same reminders
