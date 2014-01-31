@@ -8,12 +8,7 @@ function handleMessage(from, to, message) {
         if (sides == NaN) {
             ircClient.say(to, from + ": That's not a number.");
         }
-
         var roll = Math.floor((Math.random() * sides) + 1);
-        if (from == "con" && sides == 5) {
-            roll = 5;
-        }
-
         ircClient.say(to, from + ": A " + roll + " shows on the " + sides + "-sided die.")
     }
 }

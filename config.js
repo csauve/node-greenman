@@ -15,7 +15,13 @@ module.exports = {
         channels: ["#modacity"]
     },
 
-    cmdPrefix: "^\\.",
+    cmdPrefix: "^~",
     //modules config
-    modulesDir: path.join(__dirname, "modules")
+    modulesDir: path.join(__dirname, "modules"),
+    disabledModules: [
+        "halo3",
+        "rip",
+        "copyright",
+        "rip"
+    ]
 };
