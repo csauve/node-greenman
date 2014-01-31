@@ -3,20 +3,7 @@ greenman
 An IRC bot built on node-irc and inspired by [phenny](https://github.com/sbp/phenny) and [DEEbot](https://github.com/DEElekgolo/DEEbot).
 
 This project is still a work in progress.
-```
-╭━━━━━━╮
-┃　       ͡° ͜ʖ ͡°   　　┃
-┃　　　　　　┃
-┃┃　　　┃　┃
-┃┃　　　┃　┃
-┃┃　　　┃　┃
-╰┫　　　╰┳╯
-　┃　5　　 ┃
-　┃　┃　　┃
-　┃　┃　　┃
-╭┛╭┛　　┃
-┗━━━━╯
-```
+
 Installation
 ------------
 1. Clone or export this repository
