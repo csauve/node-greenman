@@ -1,18 +1,26 @@
 var ircClient = require("../ircClient");
 var config = require("../config");
 var request = require("request");
+var title = require("./title");
 
 function handleMessage(from, to, message) {
     var match = message.match(RegExp(config.cmdPrefix + "g (.+)", "i"));
     if (match) {
         var input = match[1];
-        request.get("http://www.google.com/search?q=" + thing + "&btnI", function(error, response, body) {
+        request.get("http://www.google.com/search?q=" + input + "&btnI", function(error, response, body) {
             if (error) {
                 console.log(error);
                 return;
             }
 
-            console.log(response);
+            var url = response.request.href;
+            title.resolveTitle(url, function(error, response, title) {
+                if (error) {
+                    ircClient.say(to, from + ": " + url);
+                } else {
+                    ircClient.say(to, from + ": " + url+ " [" + title + "]");
+                }
+            })
         });
     }
 }
