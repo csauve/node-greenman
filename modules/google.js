@@ -1,7 +1,7 @@
 var ircClient = require("../ircClient");
 var config = require("../config");
 var request = require("request");
-var title = require("./title");
+var link = require("./link");
 
 function handleMessage(from, to, message) {
     var match = message.match(RegExp(config.cmdPrefix + "g (.+)", "i"));
@@ -14,7 +14,7 @@ function handleMessage(from, to, message) {
             }
 
             var url = response.request.href;
-            title.resolveTitle(url, function(error, response, title) {
+            link.resolveTitle(url, function(error, response, title) {
                 if (error) {
                     ircClient.say(to, from + ": " + url);
                 } else {
