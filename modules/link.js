@@ -3,6 +3,7 @@ var request = require("request");
 var crypto = require("crypto");
 var moment = require("moment");
 var Datastore = require("nedb");
+var async = require("async");
 
 var repostsDb = new Datastore({ filename: "postedlinks.db", autoload: true });
 
@@ -14,25 +15,35 @@ function handleMessage(nick, to, text) {
     if (urlMatch) {
         var url = urlMatch[1].trim();
 
-        isRepost(url, to, function(isRepost, nickOP, dateOP) {
-            resolveTitle(url, function(error, response, title) {
-                if (error || response.statusCode != 200) {
-                    ircClient.say(to, "[ Error: " + response.statusCode + " ]");
-                    return;
+        async.parallel([
+                function(callback) {
+                    isRepost(url, to, function(repost) {
+                        callback(null, repost);
+                    });
+                },
+                function(callback) {
+                    resolveTitle(url, function(error, response, title) {
+                        callback(null, (error || response.statusCode != 200) ? undefined : title);
+                    });
                 }
-                if (title || isRepost) {
+            ],
+            function(err, results) {
+                var repost = results[0];
+                var title = results[1];
+
+                if (title || repost) {
                     ircClient.say(to,
                         (title ? "[ " + title + " ] " : "") +
-                        (isRepost ? "Originally posted by " + nickOP + " " + moment(dateOP).fromNow() : "")
+                        (repost ? "Originally posted by " + repost.nick + " " + moment(repost.date).fromNow() : "")
                     );
                 }
 
                 //remember who posted this link
-                if (!isRepost) {
+                if (!repost) {
                     savePost(url, nick, to);
                 }
-            });
-        });
+            }
+        );
     }
 }
 
@@ -50,17 +61,11 @@ function savePost(url, nick, channel) {
     });
 }
 
-//callback takes arguments isRepost, nick, date
+//callback takes argument repost
 function isRepost(url, channel, callback) {
     var urlHash = crypto.createHash("md5").update(url).digest("base64");
     repostsDb.find({urlHash: urlHash, channel: channel}, function(err, docs) {
-        var nick, date, isRepost;
-        if (isRepost = (!err && docs.length > 0)) {
-            nick = docs[0].nick;
-            date = docs[0].date;
-        }
-
-        callback(isRepost, nick, date);
+        callback((!err && docs.length > 0) ? docs[0] : undefined);
     });
 }
 
