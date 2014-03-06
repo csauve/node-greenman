@@ -21,22 +21,16 @@ function handlePm(from, message) {
             });
             break;
         case /^(?:load|ld)/.test(args[0]):
-            moduleLoader.loadModule(args[1], function(error) {
-                if (error) {
-                    ircClient.say(from, "Failed to load module " + args[1]);
-                } else {
-                    ircClient.say(from, "Loaded module " + args[1]);
-                }
-            });
+            if (moduleLoader.requireModule(args[1])) {
+                ircClient.say(from, "Loaded module " + args[1]);
+            } else {
+                ircClient.say(from, "Failed to load module " + args[1]);
+            }
             break;
         case /^(?:unload|uld)/.test(args[0]):
-            moduleLoader.unloadModule(args[1], function(error) {
-                if (error) {
-                    ircClient.say(from, error);
-                } else {
-                    ircClient.say(from, "Unloaded module " + args[1]);
-                }
-            });
+            if (moduleLoader.unloadModule(args[1])) {
+                ircClient.say(from, "Unloaded module " + args[1]);
+            }
             break;
         case /^(?:getconfig|getc)/.test(args[0]):
             var pathElements = args[1].split(".");
