@@ -1,8 +1,8 @@
 _ = require("underscore");
-var moduleLoader = require("./moduleLoader");
+var moduleManager = require("./moduleManager");
 
 //load the modules
-if (moduleLoader.init() == 0) {
+if (moduleManager.init() == 0) {
 	console.warn("No modules loaded.");
 	process.exit(1);
 }

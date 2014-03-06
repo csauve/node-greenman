@@ -1,9 +1,11 @@
 var ircClient = require("../ircClient");
 var config = require("../config");
 var request = require("request");
-var link = require("./link");
+var moduleManager = require("../moduleManager");
 
 function handleMessage(from, to, message) {
+    var link = moduleManager.requireModule("link");
+
     var match = message.match(RegExp(config.cmdPrefix + "g (.+)", "i"));
     if (match) {
         var input = match[1];

@@ -1,6 +1,6 @@
 var ircClient = require("../ircClient");
 var config = require("../config");
-var moduleLoader = require("../moduleLoader");
+var moduleLoader = require("../moduleManager");
 
 config.rcon = {
     password: "changeme"
