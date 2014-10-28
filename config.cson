@@ -6,10 +6,13 @@ irc:
     realName: "greenman bot"
     floodProtection: true
     channels: [
-      "#modacity"
+      "#modacitytest"
     ]
 
 core:
+  rateLimit:
+    requestsPerSecond: 0.5
+
   disabledModules: [
       "halo3"
       "rip"
