@@ -1,30 +1,22 @@
 {
   "name": "greenman",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "IRC bot based on node-irc",
   "main": "greenman.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/csauve/greenman.git"
   },
-  "author": "",
-  "license": "BSD",
+  "author": "csauve <connorsauve@gmail.com> (http://t3hz0r.com)",
+  "contributors": [
+    "DEElekgolo (http://deelekgolo.tumblr.com/)"
+  ],
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/csauve/greenman/issues"
   },
   "dependencies": {
-    "irc": "~0.3.6",
-    "optimist": "~0.6.0",
-    "request": "~2.27.0",
-    "underscore": "~1.5.2",
-    "moment": "~2.4.0",
-    "crypto": "0.0.3",
-    "xml2js": "~0.4.0",
-    "nedb": "~0.10.0",
-    "sugar": "~1.4.1",
-    "async": "~0.2.10"
+    "cson": "^1.6.1",
+    "irc": "~0.3.6"
   }
 }

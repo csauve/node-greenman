@@ -1,0 +1,18 @@
+irc:
+  server: "irc.gamesurge.net"
+  nick: "greenman"
+  options:
+    userName: "greenman"
+    realName: "greenman bot"
+    floodProtection: true
+    channels: [
+      "#modacity"
+    ]
+
+core:
+  disabledModules: [
+      "halo3"
+      "rip"
+      "copyright"
+      "rip"
+  ]
