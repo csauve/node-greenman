@@ -1,8 +1,8 @@
 rateLimit = require "../../lib/rateLimit"
 #todo: pull rateLimit out of this project
 
-module.exports = init: (config, bot) ->
-  prefix = config.global.prefix || "!"
+module.exports = init: (bot, config) ->
+  prefix = config?.global?.prefix || "!"
 
   limiter = rateLimit
     rate: 0.3
