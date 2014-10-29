@@ -35,9 +35,15 @@ module.exports = class Greenman
     if @client
       @client.say channel, "#{nick}: #{message}"
 
-  connect: (server, options) =>
+  connect: (options) =>
+    options.userName = options.userName || @nick
+    options.realName = options.realName || @nick
+
     if @client then @client.disconnect()
-    @client = new irc.Client server, @nick, options
+    @client = new irc.Client options.server, @nick, options
+
+    @client.addListener "error", (message) ->
+      console.error message
 
     @client.addListener "message", (from, to, message) =>
       executeStack = (index) =>
@@ -45,5 +51,7 @@ module.exports = class Greenman
         callback = @stack[index]
         callback from, to, message, () ->
           executeStack index + 1
-
-      executeStack 0
+      try
+        executeStack 0
+      catch error
+        console.error "Uncaught stack error: #{error.stack}"

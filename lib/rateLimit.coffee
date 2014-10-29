@@ -1,18 +1,31 @@
-buckets = {}
+module.exports = (options) ->
+  requestsPerSecond = options.rate || 1
+  burst = options.burst || 1
+  maxStrikes = options.strikes || 0
+  cooldown = options.cooldown || 0
 
-module.exports = (requestsPerSecond = 1, burst = 1) ->
-  return (from, to, message, next) ->
-    if buckets[from] == undefined
-      buckets[from] =
+  buckets = {}
+
+  return (key, callbacks) ->
+    if buckets[key] == undefined
+      buckets[key] =
         tokens: burst
         lastRequest: new Date().getTime()
+        strikes: 0
 
     now = new Date().getTime()
-    elapsedSec = (now - buckets[from].lastRequest) / 1000
-    currTokens = buckets[from].tokens
-    buckets[from].tokens = Math.min(burst, currTokens + elapsedSec * requestsPerSecond)
-    buckets[from].lastRequest = now
+    elapsedSec = (now - buckets[key].lastRequest) / 1000
 
-    if buckets[from].tokens >= 1
-      buckets[from].tokens -= 1
-      next()
+    currTokens = buckets[key].tokens
+    buckets[key].tokens = Math.min(burst, currTokens + elapsedSec * requestsPerSecond)
+    buckets[key].lastRequest = now
+
+    if cooldown > 0 and elapsedSec >= cooldown then buckets[key].strikes = 0
+    if maxStrikes > 0 and buckets[key].strikes >= maxStrikes then return
+
+    if buckets[key].tokens >= 1
+      buckets[key].tokens--
+      callbacks.go()
+    else
+      buckets[key].strikes++
+      if callbacks.no then callbacks.no buckets[key].strikes

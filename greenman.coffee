@@ -1,13 +1,12 @@
 CSON = require "cson"
-config = CSON.parseFileSync process.argv[2] || "config.cson"
-rateLimit = require "./lib/rateLimit"
 Greenman = require "./lib/ircClient"
+modules = require "./modules"
+colors = require "colors/safe"
+
+config = CSON.parseFileSync process.argv[2] || "config.cson"
 
 greenman = new Greenman config.irc.nick
-
-greenman.use rateLimit config.core.rateLimit.requestsPerSecond
-
-greenman.msg /^!echo (.+)$/, (nick, channel, match) ->
-    greenman.reply nick, channel, match[1]
-
-greenman.connect config.irc.server, config.irc.options
+modules.init config, greenman, (error) ->
+  if error then return console.error "Failed to initialize modules: #{error.stack}"
+  console.log "Connnecting to #{colors.green config.irc.server} as #{colors.green config.irc.nick} ( ͡° ͜ʖ ͡°)"
+  greenman.connect config.irc
