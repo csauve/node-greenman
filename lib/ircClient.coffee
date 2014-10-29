@@ -10,11 +10,12 @@ module.exports = class Greenman
 
   msg: (arg1, arg2) =>
     @use (from, to, message, next) =>
-      if arg2 != undefined
-        match = message.match arg1
-        if match then arg2 from, to, match
-      else
-        arg1 from, to, message
+      if to != @nick
+        if arg2 != undefined
+          match = message.match arg1
+          if match then arg2 from, to, match
+        else
+          arg1 from, to, message
       next()
 
   pm: (arg1, arg2) =>

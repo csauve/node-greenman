@@ -3,7 +3,7 @@ path = require "path"
 async = require "async"
 colors = require "colors/safe"
 
-module.exports = init: (config, bot, callback) ->
+module.exports = init: (bot, config, callback) ->
   fs.readdir __dirname, (error, files) ->
     return callback error if error
 
@@ -19,7 +19,7 @@ module.exports = init: (config, bot, callback) ->
           if stats.isDirectory()
             mod = require "./#{file}"
             console.log "Initializing module #{colors.green file}"
-            mod.init config, bot
+            mod.init bot, config
           asyncCallback()
         catch error
           asyncCallback error
