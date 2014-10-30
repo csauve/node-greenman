@@ -3,25 +3,21 @@ path = require "path"
 async = require "async"
 colors = require "colors/safe"
 
-module.exports = init: (bot, config, callback) ->
+module.exports = getEnabled: (config, callback) ->
   fs.readdir __dirname, (error, files) ->
-    return callback error if error
+    if error then throw error
 
-    tryLoadModule = (file, asyncCallback) ->
+    isEnabledModule = (file, filterCallback) ->
       if file in config?.global?.disabledModules or file[0] == "."
-        return asyncCallback()
+        return filterCallback false
 
       filePath = path.join __dirname, file
       fs.stat filePath, (error, stats) ->
-        return asyncCallback error if error
+        if error then throw error
+        filterCallback stats.isDirectory()
 
-        try
-          if stats.isDirectory()
-            mod = require "./#{file}"
-            console.log "Initializing module #{colors.green file}"
-            mod.init bot, config
-          asyncCallback()
-        catch error
-          asyncCallback error
-
-    async.each files, tryLoadModule, callback
+    async.filter files, isEnabledModule, (names) ->
+      mods = {}
+      for name in names
+        mods[name] = require "./#{name}"
+      callback mods

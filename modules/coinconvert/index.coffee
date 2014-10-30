@@ -1,7 +1,13 @@
 request = require "request"
 rateLimit = require "../../lib/rateLimit"
+c = require "irc-colors"
 
-module.exports = init: (bot, config) ->
+module.exports = init: (bot, config, modules) ->
+
+  if modules.man
+    modules.man.page "coin",
+      "Convert between crypto-currencies using #{c.underline "http://cryptocoincharts.info/"}.
+      Usage: #{c.red "#{config.global.prefix}coin <amount> <source currency> to <dest currency>"}"
 
   limiter = rateLimit
     rate: 0.7

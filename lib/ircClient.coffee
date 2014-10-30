@@ -28,13 +28,23 @@ module.exports = class Greenman
           arg1 from, message
       next()
 
-  say: (to, message) =>
-    if @client
-      @client.say to, message
+  any: (arg1, arg2) =>
+    @use (from, to, message, next) =>
+      if arg2 != undefined
+        match = message.match arg1
+        if match then arg2 from, to, match
+      else
+        arg1 from, to, message
+      next()
 
-  reply: (nick, channel, message) =>
+  say: (to, message) =>
+    if @client then @client.say to, message
+
+  reply: (from, to, message) =>
     if @client
-      @client.say channel, "#{nick}: #{message}"
+      isPrivateMessage = to == @nick
+      dest = if isPrivateMessage then from else to
+      @client.say dest, "#{from}: #{message}"
 
   connect: (options) =>
     options.userName = options.userName || @nick
