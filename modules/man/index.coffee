@@ -28,4 +28,4 @@ module.exports =
 
     bot.any ///^#{config.global.prefix}man-list$///i, (from, to, match) ->
       results = (page for page of pages)
-      bot.reply from, to, results.join ", "
+      bot.reply from, to, "Available pages: #{results.join ", "}"
