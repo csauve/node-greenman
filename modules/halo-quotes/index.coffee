@@ -35,7 +35,7 @@ module.exports = init: (bot, config, modules) ->
         bot.reply nick, channel, c.green quote
 
   bot.msg (nick, channel) ->
-    if Math.random() > 0.05 then return
+    if Math.random() > (1 / 200) then return
     randomLimiter channel, go: () ->
       quote = getRandomQuote()
       bot.say channel, c.green quote

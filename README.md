@@ -85,6 +85,7 @@ Call `rateLimit` with an options object to get a new limiter. The options are:
 To invoke the limiter, just call it with a key that will get its own token bucket, like `nick`, and a callbacks object. The `no` callback is optional.
 
 ## To-Do
+* Link shortening for title
 * Convert all modules in modules.old to new API
 * Pull rateLimit out to its own NPM module
 * JS and python sandbox modules
