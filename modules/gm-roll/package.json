@@ -9,6 +9,6 @@
   "author": "csauve",
   "license": "MIT",
   "dependencies": {
-    "roll": "^0.3.2"
+    "roll": "^1.0.0"
   }
 }
