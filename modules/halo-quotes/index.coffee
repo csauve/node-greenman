@@ -12,10 +12,10 @@ commandLimiter = rateLimit
   cooldown: 10
 
 randomLimiter = rateLimit
-  rate: 1 / 60
+  rate: 1 / 120
   burst: 2
   strikes: 2
-  cooldown: 120
+  cooldown: 240
 
 getRandomQuote = () ->
   index = Math.floor(masterchief.quotes.length * Math.random())
@@ -35,7 +35,7 @@ module.exports = init: (bot, config, modules) ->
         bot.reply nick, channel, c.green quote
 
   bot.msg (nick, channel) ->
-    if Math.random() > 0.1 then return
+    if Math.random() > 0.05 then return
     randomLimiter channel, go: () ->
       quote = getRandomQuote()
       bot.say channel, c.green quote
