@@ -1,0 +1,14 @@
+{
+  "name": "title",
+  "version": "1.0.0",
+  "description": "greenman module for getting page titles from URLs",
+  "main": "index.coffee",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "csauve",
+  "license": "MIT",
+  "dependencies": {
+    "request": "^2.47.0"
+  }
+}

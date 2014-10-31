@@ -29,4 +29,4 @@ module.exports = init: (bot, config) ->
               bot.say channel, "#{nick}: No results found!"
             else
               topResult = results[0]
-              bot.say channel, "#{nick}: #{c.underline.aqua topResult.Url} [#{topResult.Title}] #{c.red topResult.Description}"
+              bot.say channel, "#{nick}: #{c.underline.red topResult.Url} [#{topResult.Title}] #{topResult.Description}"
