@@ -9,7 +9,7 @@ module.exports =
   init: (bot, config) ->
     module.exports.page "man", "View a manual page. Usage: #{c.red "#{config.global.prefix}man <page>"}"
     module.exports.page "man-search", "Search pages for text. Usage: #{c.red "#{config.global.prefix}man-search <regex>"}"
-    module.exports.page "man-list", "List all manaul pages. Usage: #{c.red "#{config.global.prefix}man-list"}"
+    module.exports.page "man-list", "List all manaul pages. Usage: #{c.red "#{config.global.prefix}man"}"
 
     bot.any ///^#{config.global.prefix}man\s+(.+)$///i, (from, to, match) ->
       description = pages[match[1]]
@@ -26,6 +26,6 @@ module.exports =
       else
         bot.reply from, to, "No results found for #{match[1]}"
 
-    bot.any ///^#{config.global.prefix}man-list$///i, (from, to, match) ->
+    bot.any ///^#{config.global.prefix}man$///i, (from, to, match) ->
       results = (page for page of pages)
       bot.reply from, to, "Available pages: #{results.join ", "}"

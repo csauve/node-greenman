@@ -33,7 +33,7 @@ module.exports = init: (bot, config, modules) ->
       request.get "http://suggestqueries.google.com/complete/search?client=firefox&q=#{query}", (error, response, body) ->
         if error then throw error
         result = JSON.parse body
-        if !result or !result[1]
+        if !result or !result[1] or result[1].length == 0
           return bot.reply nick, channel, "No suggestions found"
 
         top5 = result[1].slice 0, 5

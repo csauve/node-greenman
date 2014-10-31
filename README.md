@@ -87,3 +87,5 @@ To invoke the limiter, just call it with a key that will get its own token bucke
 ## To-Do
 * Convert all modules in modules.old to new API
 * Pull rateLimit out to its own NPM module
+* Random quoting when chat active
+* JS and python sandbox modules

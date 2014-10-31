@@ -2,6 +2,7 @@ irc:
   nick: "greenman"
   server: "irc.gamesurge.net"
   floodProtection: true
+  floodProtectionDelay: 1000
   channels: [
     "#modacitytest"
   ]
@@ -10,8 +11,11 @@ global:
   prefix: "!"
   disabledModules: [
     "halo3"
-    "rip"
     "copyright"
     "rip"
+  ]
+  disabledNicks: [
+    "DEEbot"
+    "ChanServ"
   ]
 
