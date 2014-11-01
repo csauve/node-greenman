@@ -4,11 +4,14 @@ modulesDir = require "./modules"
 colors = require "colors/safe"
 
 config = CSON.parseFileSync process.argv[2] || "config.cson"
-
 greenman = new Greenman config.irc.nick
 
 greenman.use (from, to, message, next) ->
-  if from not in (config.global?.disabledNicks || []) then next()
+  if from not in (config.global?.disabledNicks || [])
+    next from, to, message
+
+greenman.use (from, to, message, next) ->
+  next from, to, message.trim()
 
 modulesDir.getEnabled config, (modules) ->
   for name of modules
