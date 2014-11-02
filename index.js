@@ -1,3 +1,6 @@
 require("coffee-script");
 
-module.exports = require("./lib/greenman");
+module.exports = {
+  rateLimit: require("./lib/rateLimit"),
+  greenman: require("./lib/greenman")
+};
