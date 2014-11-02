@@ -3,48 +3,60 @@ irc = require "irc"
 module.exports = class Greenman
 
   constructor: (@nick = "greenman") ->
-    @stack = []
+    @stacks = {}
 
-  use: (callback) ->
-    @stack.push callback
+  use: (event, callback) ->
+    if !@stacks[event] then @stacks[event] = []
+    @stacks[event].push callback
+
+  event: (event, callback) ->
+    @use event, () ->
+      next = arguments[arguments.length - 1]
+      callback.apply null, arguments
+      next.apply null, arguments
 
   msg: (arg1, arg2) =>
-    @use (from, to, message, next) =>
+    @event "message", (from, to, text) =>
       if to != @nick
         if arg2 != undefined
-          match = message.match arg1
+          match = text.match arg1
           if match then arg2 from, to, match
         else
-          arg1 from, to, message
-      next from, to, message
+          arg1 from, to, text
 
   pm: (arg1, arg2) =>
-    @use (from, to, message, next) =>
+    @event "message", (from, to, text) =>
       if to == @nick
         if arg2 != undefined
-          match = message.match arg1
+          match = text.match arg1
           if match then arg2 from, match
         else
-          arg1 from, message
-      next from, to, message
+          arg1 from, text
 
   any: (arg1, arg2) =>
-    @use (from, to, message, next) =>
+    @event "message", (from, to, text) ->
       if arg2 != undefined
-        match = message.match arg1
+        match = text.match arg1
         if match then arg2 from, to, match
       else
-        arg1 from, to, message
-      next from, to, message
+        arg1 from, to, text
 
-  say: (to, message) =>
-    if @client then @client.say to, message
+  join: (callback) ->
+    @event "join", () ->
+      callback.apply null, arguments
 
-  reply: (from, to, message) =>
+  quit: (callback) ->
+    @event "quit", () ->
+      callback.apply null, arguments
+
+  say: (to, text) =>
+    if @client then @client.say to, text
+
+  reply: (from, to, text) =>
     if @client
       isPrivateMessage = to == @nick
       dest = if isPrivateMessage then from else to
-      @client.say dest, "#{from}: #{message}"
+      @client.say dest, "#{from}: #{text}"
 
   connect: (options) =>
     options.userName = options.userName || @nick
@@ -53,16 +65,24 @@ module.exports = class Greenman
     if @client then @client.disconnect()
     @client = new irc.Client options.server, @nick, options
 
-    @client.addListener "error", (message) ->
+    @use "error", (message, next) ->
       console.error message
+      next message
 
-    @client.addListener "message", (from, to, message) =>
-      executeStack = (index, inFrom, inTo, inMessage) =>
-        if index >= @stack.length then return
-        stackEl = @stack[index]
-        stackEl inFrom, inTo, inMessage, (outFrom, outTo, outMessage) ->
-          executeStack index + 1, outFrom, outTo, outMessage
-      try
-        executeStack 0, from, to, message
-      catch error
-        console.error "Uncaught stack error: #{error.stack}"
+    for event, stack of @stacks
+      ((event, stack) =>
+        @client.addListener event, () ->
+          executeHandler = (index, args) =>
+            if index >= stack.length then return
+            handler = stack[index]
+            #set (replace) the 'next' callback argument
+            args[args.length - 1] = () ->
+              executeHandler index + 1, arguments #output args
+            handler.apply null, args
+          try
+            firstArgs = Array.prototype.slice.call arguments
+            firstArgs.push null #executeHandler will override this
+            executeHandler 0, firstArgs #input args
+          catch error
+            console.error "Uncaught error in '#{event}' stack: #{error.stack}"
+      )(event, stack)
