@@ -1,5 +1,5 @@
 # Greenman
-Greenman is a middleware library for node.js IRC bots built on [node-irc](https://github.com/martynsmith/node-irc). Greenman is to node-irc what [connect](https://github.com/senchalabs/connect) is to `http.Server`. It is not an IRC bot in itself, but provides conveniences in building them.
+Greenman is a middleware library for node.js IRC bots built on [node-irc 0.3.x](https://github.com/martynsmith/node-irc/tree/0.3.x). Greenman is to node-irc what [connect](https://github.com/senchalabs/connect) is to `http.Server`. It is not an IRC bot in itself, but provides conveniences in building them.
 
 ## Installation
 ```sh
@@ -16,7 +16,7 @@ var bot = new Bot("nick");
 ```
 
 ## Middleware
-Middleware are functions that handle incoming IRC messages, and then call the next middleware in the stack. They will be called in the order they were added to the bot, but only as long as a each middleware calls `next(...)`. Stacks exist per IRC event, and the middleware functions in those stacks will take arguments specific to that event. Since Greenman is built on node-irc (0.3.x), the events and callback arguments are exactly the same as [documented here](https://node-irc.readthedocs.org/en/latest/API.html#events). The `next` function lets you pass in the parameters that downstream middleware will use.
+Middleware are functions that handle incoming IRC messages, and then call the next middleware in the stack. They will be called in the order they were added to the bot, but only as long as a each middleware calls `next(...)`. Stacks exist per IRC event, and the middleware functions in those stacks will take arguments specific to that event. Since Greenman is built on node-irc, the events and callback arguments are exactly the same as [documented here](https://node-irc.readthedocs.org/en/latest/API.html#events). The `next` function lets you pass in the parameters that downstream middleware will use.
 
 Here's an example middleware to trim messages:
 ```js
@@ -108,9 +108,15 @@ client.join("#mychannel", "password");
 ## Alternatives
 Need something different? Check out [oftn-bot](https://github.com/oftn/oftn-bot) and [Jerk](https://github.com/gf3/Jerk) :)
 
-## Contributing & to-do list
-Pull requests happily accepted. This project is not yet at 1.0.0, so there's still some work to do:
-* Create test cases, hardening for 1.0.0
+## Contributing
+### Cloning and running tests
+```sh
+git clone git@github.com:csauve/node-greenman.git
+npm install
+npm test
+```
+
+Pull requests happily accepted.
 
 ## License
 Licensed under the [MIT License](http://opensource.org/licenses/mit-license.php).
