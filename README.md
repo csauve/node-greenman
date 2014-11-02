@@ -114,4 +114,4 @@ Pull requests happily accepted. This project is not yet at 1.0.0, so there's sti
 * Create test cases, hardening for 1.0.0
 
 ## License
-Licensed under the (MIT License](http://opensource.org/licenses/mit-license.php).
+Licensed under the [MIT License](http://opensource.org/licenses/mit-license.php).
