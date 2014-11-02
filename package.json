@@ -1,11 +1,11 @@
 {
   "name": "greenman",
-  "version": "0.2.0",
-  "description": "IRC bot based on node-irc",
-  "main": "greenman.js",
+  "version": "0.3.0",
+  "description": "IRC bot library with a connect-like middleware model",
+  "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/csauve/greenman.git"
+    "url": "git://github.com/csauve/node-greenman.git"
   },
   "author": "csauve <connorsauve@gmail.com> (http://t3hz0r.com)",
   "contributors": [
@@ -13,10 +13,11 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/csauve/greenman/issues"
+    "url": "https://github.com/csauve/node-greenman/issues"
   },
   "dependencies": {
     "async": "^0.9.0",
+    "coffee-script": "^1.8.0",
     "colors": "^1.0.3",
     "cson": "^1.6.1",
     "irc": "~0.3.6",

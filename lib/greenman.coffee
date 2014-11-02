@@ -41,14 +41,6 @@ module.exports = class Greenman
       else
         arg1 from, to, text
 
-  join: (callback) ->
-    @event "join", () ->
-      callback.apply null, arguments
-
-  quit: (callback) ->
-    @event "quit", () ->
-      callback.apply null, arguments
-
   say: (to, text) =>
     if @client then @client.say to, text
 
@@ -58,16 +50,12 @@ module.exports = class Greenman
       dest = if isPrivateMessage then from else to
       @client.say dest, "#{from}: #{text}"
 
-  connect: (options) =>
-    options.userName = options.userName || @nick
-    options.realName = options.realName || @nick
+  getClient: () ->
+    return @client || null
 
+  connect: (server, options) =>
     if @client then @client.disconnect()
-    @client = new irc.Client options.server, @nick, options
-
-    @use "error", (message, next) ->
-      console.error message
-      next message
+    @client = new irc.Client server, @nick, options
 
     for event, stack of @stacks
       ((event, stack) =>

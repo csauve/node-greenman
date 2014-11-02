@@ -1,92 +1,117 @@
-# greenman
-An IRC bot built on node-irc and inspired by [DEEbot](https://github.com/DEElekgolo/DEEbot) and [express](http://expressjs.com/).
+# Greenman
+Greenman is a middleware library for node.js IRC bots built on [node-irc](https://github.com/martynsmith/node-irc). Greenman is to node-irc what [connect](https://github.com/senchalabs/connect) is to `http.Server`. It is not an IRC bot in itself, but provides conveniences in building them.
 
 ## Installation
-1. Clone or export this repository
-2. `npm install` to install dependencies
-3. Edit `config.cson`
-4. `coffee greenman.coffee [config.cson]`, where config.cson is an optional path
-
-## Writing Modules
-Greenman modules are just NPM modules in the `modules` directory exporting an object with an `init` function.
-The `init` function should take arguments `bot` (used to register callbacks and make replies) and `config` (the contents of `config.cson`). For example:
-
-```coffee
-module.exports = init: (bot, config) ->
-  bot.msg ///hi, #{config.irc.nick}!///i, (nick, channel, match) ->
-    bot.say channel, "Hello, #{nick}!"
+```sh
+npm install greenman
 ```
 
-## Bot API
-The bot (`lib/ircClient`) exposes a minimal API which should be familiar to express/connect users:
+## Create a bot
+Instantiate a bot by providing a nick that will identify the bot. The instance of `Bot` is what the middleware will be added to, and eventually connected to an IRC server.
 
+```js
+var Bot = require("greenman");
+
+var bot = new Bot("nick");
+```
+
+## Middleware
+Middleware are functions that handle incoming IRC messages, and then call the next middleware in the stack. They will be called in the order they were added to the bot, but only as long as a each middleware calls `next(...)`. Stacks exist per IRC event, and the middleware functions in those stacks will take arguments specific to that event. Since Greenman is built on node-irc (0.3.x), the events and callback arguments are exactly the same as [documented here](https://node-irc.readthedocs.org/en/latest/API.html#events). The `next` function lets you pass in the parameters that downstream middleware will use.
+
+Here's an example middleware to trim messages:
+```js
+bot.use("message", function(from, to, text, message, next) {
+  next(from, to, text.trim(), message);
+});
+```
+
+Ignoring nicks from a blacklist. Because `next` is not called when the nick is in the blacklist, downstream middleware will never see the message:
+(CoffeeScript)
 ```coffee
-Bot = require "./lib/ircClient"
-bot = new Bot "nick"
+greenman.use "message", (from, to, text, message, next) ->
+  if from not in config.blacklist
+    next from, to, text, message
+```
 
-# Catch-all middleware. Callbacks are called in the order they're registered
-bot.use (nick, to, message, next) ->
-  console.log "#{nick} said #{message} to #{to}"
-  # Call next() to allow the next callback in the stack run. Or don't call it and the stack will abort
-  next()
+## Helper middleware
+Suppose you want to handle an event and you know you would always call `next` without modifying its arguments. Greenman provides some conveniences for common middleware use cases:
 
-# Handle messages to channels only, say to channel
-bot.msg (nick, channel, message) ->
+```js
+//no need to use the 'message' argument if you don't need it
+bot.event("join", function(channel, nick) {
+  console.log(nick + " joined channel " + channel);
+  //next(...) will be called for you
+});
+```
+
+You can use shorthand for these common events:
+(CoffeeScript)
+```coffee
+# Handle "message" event to channels only (no private messages)
+bot.msg (nick, channel, text) ->
   bot.say channel, "Keep it quiet, #{nick}!"
 
-# Handle messages to channels and matching a pattern
+# Handle messages to a channel if it matches a pattern
 bot.msg /I like (.+)/i, (nick, channel, match) ->
   bot.say channel, "I like #{match[1]} too!"
 
-# Handle private messages only, reply in private
-bot.pm (nick, message) ->
-  bot.say nick, "You just told me: #{message}"
+# Handle private messages sent to the bot
+bot.pm (nick, text) ->
+  bot.say nick, "Cool story, bro."
 
 # Private messages with a pattern
 bot.pm /!secret (.+)/i, (nick, match) ->
   secrets.put match[1]
   bot.say nick, "Your secret's safe with me!"
 
-# This just takes an options object equivalent to "node-irc" options, plus the server field
-bot.connect
-  server: "irc.example.com"
+# Messages sent to channels *or* privately to the bot in a PM
+# Can also be called without a regex like the others
+bot.any /^!echo (.+)$/i, (from, to, match) ->
+  # A special version of say that responds in the context the message was received
+  bot.reply from, to, match[1]
+```
+
+## Say and reply
+The first argument of `bot.say` is the recipient, be it a #channel or a nick, and the second is the text you want to send. New from node-irc is `bot.reply`. If `to` is equal to the bot's nick, then the message was a private message. Otherwise it is a message sent to a channel the bot is in. Replying takes into account the nick of the bot and sends the response to the right place. It also prefixes the message with the recipients name, so the above example would actually say "jane: Hello, world!" if the original sender was "jane".
+
+```js
+bot.any(function(from, to, text) {
+  bot.reply(from, to, "Hello, world!");
+});
+```
+
+Say and reply have no effect until `connect` has been called:
+
+## Connecting to an IRC server
+Connecting with Greenman is the same as connecting with [node-irc](https://node-irc.readthedocs.org/en/latest/API.html#client). Just pass in the server and options, because the bot already knows the nick you constructed it with.
+
+```js
+bot.connect("irc.example.com", {
+  floodProtection: true,
   channels: [
     "#mychannel"
   ]
+});
 ```
 
-## Rate Limiting
-It may be desirable to limit the rate that modules handle messages. Require `lib/rateLimit` for a simple limiter:
+And that's it! Your bot should be up and running.
 
-```coffee
-rateLimit = require "../../lib/rateLimit"
+## Getting the IRC client
+You might need to use the underlying IRC client to do some grunt work. You can get the node-irc client by calling `getClient()`. As a heads up, this will return null until `connect` has been called.
 
-module.exports = init: (config, bot) ->
-  prefix = config.global.prefix || "!"
+```js
+var client = bot.getClient();
 
-  limiter = rateLimit
-    rate: 0.3
-    burst: 2
-    strikes: 3
-    cooldown: 60
-
-  bot.msg /^!echo\s+(.+)$/i, (nick, channel, match) ->
-    limiter nick,
-      go: () -> bot.reply nick, channel, match[1]
-      no: (strike) -> bot.say nick, "Enhance your calm! (Strike #{strike} of 3)"
+client.join("#mychannel", "password");
 ```
 
-Call `rateLimit` with an options object to get a new limiter. The options are:
-* **rate**: Requests per second, determines token refill rate
-* **burst**: Determines token capacity
-* **strikes**: Set this to X, and the limiter will not allow further requests after X blocked requests. Disabled with value 0 by default
-* **cooldown**: Number of seconds after the last request until strikes returns to 0. This is 0 by default, meaning they are blocked forever if strikes are enabled
+## Alternatives
+Need something different? Check out [oftn-bot](https://github.com/oftn/oftn-bot) and [Jerk](https://github.com/gf3/Jerk) :)
 
-To invoke the limiter, just call it with a key that will get its own token bucket, like `nick`, and a callbacks object. The `no` callback is optional.
+## Contributing & to-do list
+Pull requests happily accepted. This project is not yet at 1.0.0, so there's still some work to do:
+* Compare node-irc to IRC-js as a potential foundation
+* Create test cases, hardening for 1.0.0
 
-## To-Do
-* Link shortening for title
-* Convert all modules in modules.old to new API
-* Pull rateLimit out to its own NPM module
-* JS and python sandbox modules
-* Fix rare join failure
+## License
+Licensed under the (MIT License](http://opensource.org/licenses/mit-license.php).
