@@ -72,7 +72,7 @@ bot.any /^!echo (.+)$/i, (from, to, match) ->
 ```
 
 ## Say and reply
-The first argument of `bot.say` is the recipient, be it a #channel or a nick, and the second is the text you want to send. New from node-irc is `bot.reply`. If `to` is equal to the bot's nick, then the message was a private message. Otherwise it is a message sent to a channel the bot is in. Replying takes into account the nick of the bot and sends the response to the right place. It also prefixes the message with the recipients name, so the above example would actually say "jane: Hello, world!" if the original sender was "jane".
+The first argument of `bot.say` is the recipient, be it a #channel or a nick, and the second is the text you want to send. New from node-irc is `bot.reply`. If `to` is equal to the bot's nick, then the message was a private message. Otherwise it is a message sent to a channel the bot is in. Replying takes into account the nick of the bot and sends the response to the right place. It also prefixes the message with the recipients name, so the below example would actually say "jane: Hello, world!" if the original sender was "jane".
 
 ```js
 bot.any(function(from, to, text) {
