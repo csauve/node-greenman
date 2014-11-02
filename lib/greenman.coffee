@@ -4,6 +4,7 @@ module.exports = class Greenman
 
   constructor: (@nick = "greenman") ->
     @stacks = {}
+    @client = null
 
   use: (event, callback) ->
     if !@stacks[event] then @stacks[event] = []
@@ -51,11 +52,16 @@ module.exports = class Greenman
       @client.say dest, "#{from}: #{text}"
 
   getClient: () ->
-    return @client || null
+    return @client
 
   connect: (server, options) =>
     if @client then @client.disconnect()
-    @client = new irc.Client server, @nick, options
+
+    # allow a client to be passed in for testing
+    if arguments.length == 1
+      @client = server
+    else
+      @client = new irc.Client server, @nick, options
 
     for event, stack of @stacks
       ((event, stack) =>

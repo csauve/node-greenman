@@ -10,7 +10,7 @@ npm install greenman
 Instantiate a bot by providing a nick that will identify the bot. The instance of `Bot` is what the middleware will be added to, and eventually connected to an IRC server.
 
 ```js
-var Bot = require("greenman");
+var Bot = require("greenman").Bot;
 
 var bot = new Bot("nick");
 ```
@@ -110,7 +110,6 @@ Need something different? Check out [oftn-bot](https://github.com/oftn/oftn-bot)
 
 ## Contributing & to-do list
 Pull requests happily accepted. This project is not yet at 1.0.0, so there's still some work to do:
-* Compare node-irc to IRC-js as a potential foundation
 * Create test cases, hardening for 1.0.0
 
 ## License

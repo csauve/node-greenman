@@ -15,8 +15,16 @@
   "bugs": {
     "url": "https://github.com/csauve/node-greenman/issues"
   },
+  "scripts": {
+    "test": "node_modules/mocha/bin/_mocha test/"
+  },
   "dependencies": {
     "coffee-script": "^1.8.0",
     "irc": "~0.3.6"
+  },
+  "devDependencies": {
+    "mocha": "^2.0.1",
+    "mockery": "^1.4.0",
+    "sinon": "^1.11.1"
   }
 }

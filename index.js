@@ -1,6 +1,6 @@
-require("coffee-script");
+require("coffee-script/register");
 
 module.exports = {
   rateLimit: require("./lib/rateLimit"),
-  greenman: require("./lib/greenman")
+  Bot: require("./lib/greenman")
 };
