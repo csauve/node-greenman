@@ -1,6 +1,6 @@
 {
   "name": "greenman",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "IRC bot library with a connect-like middleware model",
   "main": "index.js",
   "repository": {
@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "coffee-script": "^1.8.0",
-    "irc": "0.3.6"
+    "irc": "^0.5.0"
   },
   "devDependencies": {
     "mocha": "^2.0.1",
